@@ -57,7 +57,7 @@
     
     /* 결과 표시 영역 */
     #analysis-output { margin-top: 30px; border-top: 1px solid #e0e0e0; padding-top: 20px; }
-    .passage-container { margin-bottom: 30px; }
+    .passage-container, .notes-section-container { margin-bottom: 30px; }
     .main-container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
     .section-title { font-size: 22px; font-weight: 700; color: #1e3c72; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #4a90e2; }
     .subsection-title { font-size: 17px; font-weight: 600; color: #2a5298; margin: 25px 0 15px; }
@@ -68,13 +68,21 @@
     .grammar-note { background: #fff3e0; border-left: 5px solid #ff9800; padding: 12px; margin: 12px 0; font-size: 13px; color: #444; line-height: 1.6; }
     .korean-trans { background: #f1f3f5; padding: 10px; margin-top: 10px; border-left: 4px solid #adb5bd; font-style: italic; color: #333; font-size: 13px; line-height: 1.6; }
     .side-panel { display: flex; flex-direction: column; gap: 20px; }
-    .info-box { background: white; border: 1px solid #d1d9e0; border-radius: 10px; padding: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-    .box-title { background: #4a90e2; color: white; padding: 8px 12px; margin: -15px -15px 15px -15px; border-radius: 10px 10px 0 0; font-weight: 700; font-size: 15px; }
-    .vocab-item, .list-item { margin: 8px 0; padding: 8px; background: #f9f9f9; border-radius: 4px; font-size: 13px; }
-    .s { background-color: #e8f5e9; color: #2e7d32; } .v { background-color: #ffebee; color: #c62828; } .o { background-color: #e3f2fd; color: #1565c0; } .c { background-color: #f3e5f5; color: #6a1b9a; } .modifier { background-color: #fffde7; color: #f57f17; } .prep-phrase { background-color: #f1f8e9; color: #558b2f; } .conj { color: #00695c; border-bottom: 2px dotted #00695c; font-weight: 700; } 
+    .info-box { background: white; border: 1px solid #d1d9e0; border-radius: 10px; padding: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    /* ❗ [추가] info-box 내부 리스트의 왼쪽 여백을 줄여 가독성 향상 */
+    .info-box ul {
+        margin: 0;
+        padding-left: 20px; /* 브라우저 기본 여백(40px)보다 줄임 */
+    }
+    .box-title { background: #4a90e2; color: white; padding: 8px 12px; margin: -12px -12px 12px -12px; border-radius: 10px 10px 0 0; font-weight: 700; font-size: 15px; }
+    .vocab-item, .list-item { margin: 8px 0; padding: 4px 8px; background: #f9f9f9; border-radius: 4px; font-size: 13px; }
+    .s { background-color: #e8f5e9; color: #2e7d32; } .v { background-color: #ffebee; color: #c62828; } .o { background-color: #e3f2fd; color: #1565c0; } .c { background-color: #f3e5f5; color: #6a1b9a; } .modifier { background-color: #fffde7; color: #f57f17; } 
+    .prep-phrase { background-color: #e0f2f1; color: #00796b; } 
+    .conj { color: #00695c; border-bottom: 2px dotted #00695c; font-weight: 700; } 
     .key-expression { background-color: #fff9c4; color: #c85a00; padding: 2px 5px; border-radius: 4px; font-weight: 700; }
+    .notes-section-container { display: none; }
 
-    /* 인쇄 스타일 */
+    /* 인쇄 스타일 (학습지 분리형) */
     @media print {
         @page {
             size: A4 portrait;
@@ -86,12 +94,44 @@
                 color: #888;
             }
         }
-        body, .container { background: #fff; font-size: 9pt; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; box-shadow: none; padding: 0; margin: 0; }
+        body, .container { background-color: #fff; font-size: 9pt; color: #000; -webkit-print-color-adjust: exact; print-color-adjust: exact; box-shadow: none; padding: 0; margin: 0; }
         #input-wrapper, #action-buttons { display: none !important; }
         #analysis-output { margin: 0; padding: 0; border: none; }
-        .passage-container { page-break-after: always; }
-        .passage-container:last-child { page-break-after: avoid; }
-        .main-container, .text-analysis, .side-panel, .sentence-block, .content-box, .info-box { break-inside: avoid; }
+        .passage-container {
+            margin: 0; padding: 0; border: none; box-shadow: none;
+            page-break-after: always;
+        }
+        .passage-container .main-container {
+            display: block;
+        }
+        .passage-container .side-panel {
+            display: none;
+        }
+        .sentence-content {
+            line-height: 1.8;
+        }
+        .sentence-block, .content-box, .grammar-note, .korean-trans {
+            break-inside: avoid;
+        }
+        .notes-section-container {
+            display: block;
+            page-break-before: always;
+            page-break-after: always;
+        }
+        .notes-section-container:last-of-type {
+            page-break-after: avoid;
+        }
+        .notes-section-container .text-analysis {
+            display: none;
+        }
+        .notes-section-container .side-panel {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .notes-section-container .info-box {
+            break-inside: avoid;
+        }
     }
 </style>
 </head>
@@ -142,34 +182,36 @@
 </div>
 
 <script>
-// --- 프롬프트 템플릿 (주어 분석 규칙 강화) ---
+// --- 프롬프트 템플릿 (분석 규칙 대폭 강화) ---
 const masterPromptTemplate = `
 You are an expert English passage analyzer for Korean students. Your primary task is to analyze the provided English passages and return the results directly as a self-contained HTML block.
 
-You MUST follow all rules below and respond ONLY with the raw HTML code for the analysis blocks. Do not include \`<html>\`, \`<body>\`, \`<style>\`, or markdown "\`\`\`html" wrappers. For multiple passages, simply output the \`<div class="passage-container">...</div>\` blocks sequentially.
+You MUST follow all rules below and respond ONLY with the raw HTML code for the analysis blocks. Do not include \`<html>\`, \`<body>\`, \`<style>\`, or markdown "\`\`\`html" wrappers. For multiple passages, simply output the HTML blocks for each passage sequentially.
 
 ## ✍️ ANALYSIS RULES (Strictly follow)
 
-### 1. CRITICAL RULE: Subject Identification
+### 1. CRITICAL RULE: Final HTML Structure
+This is the most important rule. For EACH passage you are given, you must generate BOTH the \`<div class="passage-container">...</div>\` AND the \`<div class="notes-section-container">...</div>\`. Failing to provide both for every passage is a failure. The content for the side panel must be DUPLICATED in both sections.
+
+### 2. CRITICAL RULE: Complete Grammatical Analysis
+You must analyze EVERY component of the sentence. Do not stop halfway. You must identify not only subjects and verbs but also **objects, complements, and modifiers** wherever they appear. Use all available tags.
+
+### 3. CRITICAL RULE: Subject Identification
 The subject is the noun, pronoun, or phrase that performs the action of the verb. Be precise.
 - A subject can be a long phrase: e.g., \`<span class='s'>[주어] The tall man in the black coat</span>\`
 - A gerund phrase can be a subject: e.g., \`<span class='s'>[주어] Running every day</span>\`
-- A noun clause can be a subject: e.g., \`<span class='s'>[주어] That he was late</span>\`
 - **Do NOT** mistakenly label an adverbial phrase at the beginning of a sentence as the subject.
-  - **Incorrect:** \`<span class='s'>[주어] In the morning</span>, he drinks coffee.\`
-  - **Correct:** \`<span class='modifier'>[수식어] In the morning</span>, <span class='s'>[주어] he</span> <span class='v'>[동사] drinks</span> <span class='o'>[목적어] coffee</span>.\`
 
-### 2. CRITICAL RULE: Conjunction & Clause Analysis
-When a sentence contains a coordinating conjunction (e.g., and, but, so, or) connecting two independent clauses, you MUST analyze them as separate clauses.
-- **Identify the conjunction:** Wrap it in \`<span class='conj'>...</span>\`.
-- **Structure the analysis:** Provide the analysis for the first clause, followed by the conjunction, and then the analysis for the second clause. Use parentheses for visual grouping.
+### 4. CRITICAL RULE: Conjunction & Clause Analysis
+When a sentence contains a coordinating conjunction (e.g., and, but, so) connecting two independent clauses, you MUST analyze them as separate clauses.
+- **Structure:** \`<clause 1 analysis>, <span class='conj'>and</span> <clause 2 analysis>\`
+- **Do NOT use parentheses** for visual grouping.
 - **Example:**
   - **Sentence:** He studied hard, and she passed the exam.
-  - **Correct Analysis:** \`(<span class='s'>[주어] He</span> <span class='v'>[동사] studied hard</span>) <span class='conj'>and</span> (<span class='s'>[주어] she</span> <span class='v'>[동사] passed the exam</span>)\`
-  - **Do NOT use "절1", "절2" labels.**
+  - **Correct Analysis:** \`<span class='s'>[주어] He</span> <span class='v'>[동사] studied hard</span>, <span class='conj'>and</span> <span class='s'>[주어] she</span> <span class='v'>[동사] passed the exam</span>.\`
 
-### 3. CRITICAL RULE: Sentence Analysis with <span> Tags
-For the sentence content, you MUST wrap each grammatical component and the English text it describes within the correct HTML \`<span>\` tag.
+### 5. CRITICAL RULE: Sentence Analysis with <span> Tags
+Wrap each grammatical component in the correct HTML \`<span>\` tag.
 - **Subject:** \`<span class='s'>[주어] ...</span>\`
 - **Verb:** \`<span class='v'>[동사] ...</span>\`
 - **Object:** \`<span class='o'>[목적어] ...</span>\`
@@ -178,12 +220,8 @@ For the sentence content, you MUST wrap each grammatical component and the Engli
 - **Prepositional Phrase:** \`<span class='prep-phrase'>[전치사구] ...</span>\`
 - **Key Expression:** \`<span class='key-expression'>[핵심표현] ...</span>\`
 
-### 4. CRITICAL RULE: Synonyms & Antonyms Format
-For each synonym/antonym item, you MUST follow this exact string format:
-"word (part of speech): Korean meaning [유의어: synonym1, synonym2 | 반의어: antonym1, antonym2]"
-
-### 5. Final HTML Structure
-Generate the complete HTML for EACH passage within a single \`<div class="passage-container">...</div>\`. Use the exact class names and structure shown in the template below.
+### 6. CRITICAL RULE: Synonyms & Antonyms Format
+Follow this exact string format: "word (part of speech): Korean meaning [유의어: synonym1 | 반의어: antonym1]"
 
 ---
 ## PASSAGE(S) FOR ANALYSIS
@@ -192,6 +230,7 @@ Generate the complete HTML for EACH passage within a single \`<div class="passag
 
 ## HTML TEMPLATE (Use this structure for each passage)
 \`\`\`html
+<!-- Main Analysis Page -->
 <div class="passage-container">
     <div class="main-container">
         <div class="text-analysis">
@@ -212,15 +251,28 @@ Generate the complete HTML for EACH passage within a single \`<div class="passag
         <div class="side-panel">
             <div class="info-box"><div class="box-title">💡 핵심 문법</div>{keyGrammar_html}</div>
             <div class="info-box"><div class="box-title">📚 핵심 어휘</div>{keyVocab_html}</div>
-            <div class="info-box"><div class="box-title">🔎 유의어/반의어</div>{synonymsAntonyms_html}</div>
+            <div class="info-box"><div class="box-title">� 유의어/반의어</div>{synonymsAntonyms_html}</div>
             <div class="info-box"><div class="box-title">🎯 주제 분석</div><div class="list-item">{mainTheme}</div></div>
             <div class="info-box"><div class="box-title">📝 예상 출제 포인트</div>{examPoints_html}</div>
         </div>
     </div>
 </div>
+
+<!-- Notes Page (for printing) -->
+<div class="notes-section-container">
+    <div class="section-title">{passageTitle} - 정리 노트</div>
+    <div class="side-panel">
+        <!-- DUPLICATE the side panel content here -->
+        <div class="info-box"><div class="box-title">💡 핵심 문법</div>{keyGrammar_html}</div>
+        <div class="info-box"><div class="box-title">📚 핵심 어휘</div>{keyVocab_html}</div>
+        <div class="info-box"><div class="box-title">🔎 유의어/반의어</div>{synonymsAntonyms_html}</div>
+        <div class="info-box"><div class="box-title">🎯 주제 분석</div><div class="list-item">{mainTheme}</div></div>
+        <div class="info-box"><div class="box-title">📝 예상 출제 포인트</div>{examPoints_html}</div>
+    </div>
+</div>
 \`\`\`
 
-Now, analyze the provided passage(s) and generate the raw HTML block(s).
+Now, analyze the provided passage(s) and generate the raw HTML blocks.
 `;
 
 // --- UI 로직 ---
@@ -305,7 +357,6 @@ document.getElementById('render-html-btn').addEventListener('click', () => {
         return;
     }
 
-    // ❗ [수정] AI가 추가하는 마크다운 코드 블록을 자동으로 제거합니다.
     if (htmlInput.startsWith('```html')) {
         htmlInput = htmlInput.substring(7);
     }
@@ -339,3 +390,4 @@ createPassageInput();
 
 </body>
 </html>
+�
